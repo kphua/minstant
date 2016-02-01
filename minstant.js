@@ -3,6 +3,7 @@ Chats = new Mongo.Collection("chats");
 if (Meteor.isClient) {
   Meteor.subscribe("userList");
   Meteor.subscribe("chats");
+  Meteor.subscribe('emojis');
 
   // set up the main template the the router will use to build pages
   Router.configure({
@@ -131,6 +132,11 @@ if (Meteor.isServer) {
   Meteor.publish("chats", function(){
     var filter = { $or: [ {user1Id:this.userId}, {user2Id:this.userId} ] };
     return Chats.find(filter);
+  });
+
+  Meteor.publish('emojis', function() {
+    // publish emoji from package
+    return Emojis.find();
   });
 }
 
