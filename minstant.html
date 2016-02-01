@@ -90,6 +90,19 @@
 
 <!-- simple template that displays a message -->
 <template name="chat_message">
-	someone said: {{text}}
-	<br>
+	<div class="row message_margin">
+		<div class="col-md-1">
+			<div class="avatar_img_message_thumbnail">
+				<img src="/{{avatar}}">
+			</div>
+		</div>
+		<div class="col-md-11">
+			<div class="message_format">
+				<div class="sender_text">
+					{{sender}}
+				</div>
+				{{text}}
+			</div>
+		</div>
+	</div>
 </template>

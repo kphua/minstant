@@ -8,3 +8,30 @@
 .avatar_img{
 	height:75px;
 }
+.message_margin{
+  margin-bottom: 10px;
+}
+.avatar_img_message_thumbnail{
+  display: inline-block;
+	position: relative;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+}
+.avatar_img_message_thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+.message_format {
+  display: inline-block;
+  vertical-align: top;
+}
+.sender_text{
+  font-weight: bold;
+}
