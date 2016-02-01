@@ -1,6 +1,9 @@
 Chats = new Mongo.Collection("chats");
 
 if (Meteor.isClient) {
+  Meteor.subscribe("userList");
+  Meteor.subscribe("chats");
+
   // set up the main template the the router will use to build pages
   Router.configure({
     layoutTemplate: 'ApplicationLayout'
@@ -118,7 +121,16 @@ if (Meteor.isServer) {
         console.log("creating a user with password 'test123' and username/ email: "+email);
         Meteor.users.insert({profile:{username:username, avatar:avatar}, emails:[{address:email}],services:{ password:{"bcrypt" : "$2a$10$I3erQ084OiyILTv8ybtQ4ON6wusgPbMZ6.P33zzSDei.BbDL.Q4EO"}}});
       }
-    } 
+    }
+  });
+
+  Meteor.publish("userList", function() {
+    return Meteor.users.find({});
+  });
+
+  Meteor.publish("chats", function(){
+    var filter = { $or: [ {user1Id:this.userId}, {user2Id:this.userId} ] };
+    return Chats.find(filter);
   });
 }
 
