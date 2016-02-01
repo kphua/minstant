@@ -24,15 +24,12 @@ if (Meteor.isClient) {
                 {user2Id:Meteor.userId(), user1Id:otherUserId}
                 ]};
     var chat = Chats.findOne(filter);
-    if (!chat){// no chat matching the filter - need to insert a new one
-      chatId = Chats.insert({user1Id:Meteor.userId(), user2Id:otherUserId});
-    }
-    else {// there is a chat going already - use that. 
-      chatId = chat._id;
-    }
-    if (chatId){// looking good, save the id to the session
-      Session.set("chatId",chatId);
-    }
+    Meteor.call("assignChat", chat, otherUserId, function(err, data) {
+      if (err)
+        console.log("Cannot assign chat. Please log in first.");
+      // looking good, save the id to the session
+      Session.set("chatId", data);
+    });
     this.render("navbar", {to:"header"});
     this.render("chat_page", {to:"main"});  
   });
@@ -64,12 +61,21 @@ if (Meteor.isClient) {
   Template.chat_page.helpers({
     messages:function(){
       var chat = Chats.findOne({_id:Session.get("chatId")});
-      return chat.messages;
-    }, 
+      if (chat) {
+        return chat.messages;
+      }
+    },
     other_user:function(){
       return ""
-    }, 
-
+    },
+    notLoggedIn:function(){
+      if (!Meteor.user()) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
   })
  Template.chat_page.events({
   // this event fires when the user sends a message on the chat page
@@ -84,16 +90,14 @@ if (Meteor.isClient) {
       if (!msgs){// no messages yet, create a new array
         msgs = [];
       }
-      // is a good idea to insert data straight from the form
-      // (i.e. the user) into the database?? certainly not. 
       // push adds the message to the end of the array
       msgs.push({text: event.target.chat.value, sender: Meteor.user().profile.username, avatar: Meteor.user().profile.avatar});
       // reset the form
       event.target.chat.value = "";
       // put the messages array onto the chat object
       chat.messages = msgs;
-      // update the chat object in the database.
-      Chats.update(chat._id, chat);
+
+      Meteor.call("addMessageItem", chat);
     }
   }
  })
@@ -117,3 +121,25 @@ if (Meteor.isServer) {
     } 
   });
 }
+
+Meteor.methods({
+  assignChat:function(chat, otherUserId){
+    if (!this.userId) { // user not logged in
+      return false;
+    }
+    if (!chat){// no chat matching the filter - need to insert a new one
+      chatId = Chats.insert({user1Id:this.userId, user2Id:otherUserId});
+    }
+    else {// there is a chat going already - use that.
+      chatId = chat._id;
+    }
+    return chatId;
+  },
+  addMessageItem:function(chat){
+    if (!this.userId) { // user not logged in
+      return;
+    }
+    // update the chat object in the database.
+    Chats.update(chat._id, chat);
+  }
+})

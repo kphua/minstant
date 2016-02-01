@@ -35,3 +35,6 @@
 .sender_text{
   font-weight: bold;
 }
+.not-logged-in-error{
+  color: red;
+}

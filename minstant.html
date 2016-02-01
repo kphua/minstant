@@ -81,9 +81,14 @@
     <div class="row">
 		<div class="col-md-12">
 			<form class="js-send-chat">
-			<input class="input" type="text" name="chat" placeholder="type a message here...">
-			<button class="btn btn-default">send</button>
-		</form>
+				<input class="input" type="text" name="chat" placeholder="type a message here...">
+				<button class="btn btn-default">send</button>
+			</form>
+			{{#if notLoggedIn}}
+			<div class="not-logged-in-error">
+				Please log in to send a message.
+			</div>
+			{{/if}}
 		</div>
 	</div>
 </template>
